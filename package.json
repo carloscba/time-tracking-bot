@@ -1,0 +1,16 @@
+{
+  "name": "botframework",
+  "version": "1.0.0",
+  "description": "Test bot framework",
+  "main": "app.js",
+  "scripts": {
+    "test": "node js/app.js"
+  },
+  "author": "carloscba",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.4.4",
+    "require": "^2.4.20",
+    "restify": "^4.3.0"
+  }
+}
