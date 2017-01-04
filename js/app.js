@@ -1,5 +1,8 @@
+"use strict";
 var restify = require('restify');
 var builder = require('botbuilder');
+var request = require('request');
+const user_1 = require("./user");
 require('dotenv').config();
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -16,28 +19,32 @@ var recognizer = new builder.LuisRecognizer(model);
 var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
 bot.dialog('/', dialog);
 dialog.matches('greeting', [
-    function (session, args) {
-        console.log(args);
-        //session.userData.name = session.message.user.name;
-        session.send("Buen dia " + session.userData.name);
-        session.beginDialog('/userData');
+    (session, args) => {
+        var user = new user_1.User.User();
+        var userData = user.getUser(process.env.FBID);
+        userData.then(function (data) {
+            //Informacion del usuario
+            session.userData = data;
+            session.send("Hola " + session.userData.name);
+            session.beginDialog('/userData');
+        });
     },
 ]);
 dialog.matches('None', [
-    function (session) {
+    (session) => {
         session.send("No se ha reconocido el texto ingresado");
     }
 ]);
 bot.dialog('/userData', [
-    function (session) {
+    (session) => {
         builder.Prompts.choice(session, "¿Necesitas ayuda?", ["Si", "No"]);
     },
-    function (session, results) {
+    (session, results) => {
         if (results.response.entity == "Si") {
-            builder.Prompts.text(session, '¿Cual es su nombre?');
+            session.endDialog("OK " + session.userData.name);
         }
         else {
-            session.send("KO");
+            session.endDialog("KO");
         }
     },
 ]);

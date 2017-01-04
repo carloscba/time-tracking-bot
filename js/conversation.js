@@ -2,7 +2,7 @@
 var Conversation;
 (function (Conversation) {
     function hello(bot) {
-        bot.dialog('/', function (session) {
+        bot.dialog('/', (session) => {
             session.send("Hello World");
         });
     }

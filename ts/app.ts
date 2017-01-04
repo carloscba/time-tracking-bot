@@ -1,5 +1,9 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var request = require('request');
+
+import {User as userBot} from "./user";
+
 require('dotenv').config()
 
 var server = restify.createServer();
@@ -22,9 +26,17 @@ bot.dialog('/', dialog);
 
 dialog.matches('greeting', [
     (session, args) => {
-        session.userData.name = session.message.user.name;
-        session.send("Buen dia " + session.userData.name)
-        session.beginDialog('/userData');
+        var user = new userBot.User();
+        var userData = user.getUser(process.env.FBID);
+        
+        userData.then(function(data){
+            //Informacion del usuario
+            session.userData = data;
+
+            session.send("Hola " + session.userData.name)
+            session.beginDialog('/userData');
+        });
+        
     },
 ]);
 
@@ -42,19 +54,11 @@ bot.dialog('/userData', [
     },
     (session, results) => {
         if (results.response.entity == "Si") {
-            builder.Prompts.text(session, '¿Cual es su nombre?');
+            session.endDialog("OK " + session.userData.name);
         } else {
-            session.send("KO");
+            session.endDialog("KO");
         }
-    }, 
-    /*
-    function (session) {
         
-    },
-    function (session, results) {
-        session.userData.name = results.response;
-        session.endDialog();
-    }
-    */
+    }, 
 ]);
 

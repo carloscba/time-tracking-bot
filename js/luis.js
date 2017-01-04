@@ -3,10 +3,10 @@ var Luis;
 (function (Luis) {
     function greeting() {
         return [
-            function (session, args, next) {
+            (session, args, next) => {
                 session.send("Hola Mundo");
             },
-            function (session, args, next) {
+            (session, args, next) => {
                 session.send("Hola Mundo 2");
             }
         ];
