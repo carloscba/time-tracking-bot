@@ -8,11 +8,11 @@ export module User{
         private access_token:string = "EAAKklVod9dcBAPTWkd5FzwpQDsfUrlbpV351Emv35KObsZBjZCAHRhjfSUe8ZBaxKFnMchOpIbUo9F9AmJnuXAgKhW3bdsTiyrZBUafb8PdnD8RtDlncwfVn50wJviOjpBgV1PeDJNjU9JVed8FnHJJQtH4kIN17iRGGirFZCugZDZD"
         private baseUrl:String      = "https://graph.facebook.com/v2.8/"
         private request;
-        //714243435;
-        
+        private platform;
 
-        constructor() {
-            this.request    = require('request');
+        constructor(platform) {
+            this.request = require('request');
+            this.platform = platform;
         }
 
         public getUser(id:string):any{
@@ -26,7 +26,6 @@ export module User{
                         var data = JSON.parse(body);
                         resolve(data);    
                     }
-
                 })
 
             });

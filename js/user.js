@@ -3,11 +3,11 @@ var User;
 (function (User_1) {
     //import {Request} from "request";
     class User {
-        //714243435;
-        constructor() {
+        constructor(platform) {
             this.access_token = "EAAKklVod9dcBAPTWkd5FzwpQDsfUrlbpV351Emv35KObsZBjZCAHRhjfSUe8ZBaxKFnMchOpIbUo9F9AmJnuXAgKhW3bdsTiyrZBUafb8PdnD8RtDlncwfVn50wJviOjpBgV1PeDJNjU9JVed8FnHJJQtH4kIN17iRGGirFZCugZDZD";
             this.baseUrl = "https://graph.facebook.com/v2.8/";
             this.request = require('request');
+            this.platform = platform;
         }
         getUser(id) {
             var _this = this;

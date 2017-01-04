@@ -26,7 +26,11 @@ bot.dialog('/', dialog);
 
 dialog.matches('greeting', [
     (session, args) => {
-        var user = new userBot.User();
+       
+        console.log(session.message.address.user);
+
+        var platform = session.message.source
+        var user = new userBot.User(platform);
         var userData = user.getUser(process.env.FBID);
         
         userData.then(function(data){
