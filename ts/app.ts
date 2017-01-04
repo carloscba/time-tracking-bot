@@ -34,7 +34,7 @@ dialog.matches('greeting', [
             session.userData = data;
 
             session.send("Hola " + session.userData.name)
-            session.beginDialog('/userData');
+            session.beginDialog('/initOptions');
         });
         
     },
@@ -46,19 +46,53 @@ dialog.matches('None', [
     }
 ]);
 
+dialog.matches('getSavedData', [
+    (session) => {
+        session.send("Sus datos: "+ JSON.stringify(session.userData));
+    }
+]);
 
-bot.dialog('/userData', [
+
+bot.dialog('/initOptions', [
     
     (session) => {
-        builder.Prompts.choice(session, "¿Necesitas ayuda?", ["Si","No"]);
+        builder.Prompts.choice(session, "¿Que deseas hacer?", ["Cambiar mi nombre", "Subir una imagen"]);
     },
     (session, results) => {
-        if (results.response.entity == "Si") {
-            session.endDialog("OK " + session.userData.name);
-        } else {
-            session.endDialog("KO");
+
+        switch(results.response.entity){
+            case "Cambiar mi nombre":
+                session.beginDialog('/saveName');
+            break;
+            case "Subir una imagen":
+                session.beginDialog('/uploadImage');
+            break;            
+            default:
+                session.endDialog();
+            break;
         }
         
     }, 
+]);
+
+bot.dialog('/saveName', [
+    (session) => {
+        builder.Prompts.text(session, "Su nombre actual es "+session.userData.name+". ¿Cual quiere que sea su nuevo nombre?");
+    },
+    (session, results) => {
+        //Asigno nuevo nombre para la session. Desde aqui guardar en la base de datos
+        session.userData.name = results.response;
+        session.endDialog("Muy bien " + session.userData.name);
+    }
+]);
+
+bot.dialog('/uploadImage', [
+    (session) => {
+        builder.Prompts.attachment(session, "Seleccione una imagen para subir");
+    },
+    (session, results) => {
+        //results.response:[ { name: '', contentType: '',contentUrl: '' } ]        
+        session.endDialog();
+    }
 ]);
 
