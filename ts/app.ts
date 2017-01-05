@@ -27,18 +27,19 @@ bot.dialog('/', dialog);
 dialog.matches('greeting', [
     (session, args) => {
        
-        console.log(session.message.address.user);
-
         var platform = session.message.source
-        var user = new userBot.User(platform);
-        var userData = user.getUser(process.env.FBID);
+        var platformDataUserData = session.message.address.user;
+
+        var user = new userBot.User(platform, process.env.ACCESS_TOKEN);
+        user.debug = false;
+        var userData = user.getUser(platformDataUserData);
         
         userData.then(function(data){
             //Informacion del usuario
             session.userData = data;
 
             session.send("Hola " + session.userData.name)
-            session.beginDialog('/initOptions');
+            //session.beginDialog('/initOptions');
         });
         
     },

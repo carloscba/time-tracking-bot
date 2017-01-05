@@ -20,15 +20,15 @@ var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
 bot.dialog('/', dialog);
 dialog.matches('greeting', [
     (session, args) => {
-        console.log(session.message.address.user);
         var platform = session.message.source;
-        var user = new user_1.User.User(platform);
-        var userData = user.getUser(process.env.FBID);
+        var platformDataUserData = session.message.address.user;
+        var user = new user_1.User.User(platform, process.env.ACCESS_TOKEN);
+        var userData = user.getUser(platformDataUserData);
         userData.then(function (data) {
             //Informacion del usuario
             session.userData = data;
             session.send("Hola " + session.userData.name);
-            session.beginDialog('/initOptions');
+            //session.beginDialog('/initOptions');
         });
     },
 ]);

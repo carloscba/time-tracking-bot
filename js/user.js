@@ -3,21 +3,32 @@ var User;
 (function (User_1) {
     //import {Request} from "request";
     class User {
-        constructor(platform) {
-            this.access_token = "EAAKklVod9dcBAPTWkd5FzwpQDsfUrlbpV351Emv35KObsZBjZCAHRhjfSUe8ZBaxKFnMchOpIbUo9F9AmJnuXAgKhW3bdsTiyrZBUafb8PdnD8RtDlncwfVn50wJviOjpBgV1PeDJNjU9JVed8FnHJJQtH4kIN17iRGGirFZCugZDZD";
-            this.baseUrl = "https://graph.facebook.com/v2.8/";
+        constructor(platform, access_token) {
+            this.baseUrl = " http://wepa.m8loves.me";
+            this.endpointGetUser = "/api/leads";
             this.request = require('request');
             this.platform = platform;
+            this.access_token = access_token;
         }
-        getUser(id) {
+        getUser(user) {
+            console.log(user);
             var _this = this;
+            var options = {
+                "auth": {
+                    "bearer": this.access_token,
+                },
+                "X-Requested-With": "XMLHttpRequest"
+            };
+            console.log(_this.baseUrl + this.endpointGetUser);
             var userPromise = new Promise(function (resolve, reject) {
-                _this.request(_this.baseUrl + id + "?access_token=" + _this.access_token, function (error, response, body) {
+                _this.request(_this.baseUrl + _this.endpointGetUser, options, function (error, response, body) {
                     if (!error && response.statusCode == 200) {
+                        console.log(body);
                         var data = JSON.parse(body);
                         resolve(data);
                     }
                 });
+                resolve(user);
             });
             return userPromise;
         }
