@@ -23,6 +23,7 @@ dialog.matches('greeting', [
         var platform = session.message.source;
         var platformDataUserData = session.message.address.user;
         var user = new user_1.User.User(platform, process.env.ACCESS_TOKEN);
+        user.debug = false;
         var userData = user.getUser(platformDataUserData);
         userData.then(function (data) {
             //Informacion del usuario

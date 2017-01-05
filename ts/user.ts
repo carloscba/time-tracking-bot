@@ -11,7 +11,10 @@ export module User{
         private request;
         private platform;
 
-        private endpointGetUser:string = "/api/leads";
+        private endpointGetUser:string    = "/api";
+        private endpointCreateUser:string = "/api";
+        
+        public debug:Boolean = false;        
 
         constructor(platform, access_token) {
             this.request = require('request');
