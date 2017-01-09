@@ -3,23 +3,75 @@ var User;
 (function (User_1) {
     //import {Request} from "request";
     class User {
-        //714243435;
-        constructor() {
-            this.access_token = "EAAKklVod9dcBAPTWkd5FzwpQDsfUrlbpV351Emv35KObsZBjZCAHRhjfSUe8ZBaxKFnMchOpIbUo9F9AmJnuXAgKhW3bdsTiyrZBUafb8PdnD8RtDlncwfVn50wJviOjpBgV1PeDJNjU9JVed8FnHJJQtH4kIN17iRGGirFZCugZDZD";
-            this.baseUrl = "https://graph.facebook.com/v2.8/";
+        constructor(platform, access_token) {
+            this.baseUrl = "";
+            this.endpointGetUser = "";
+            this.endpointCreateUser = "";
+            this.endpointUpdateUser = "";
+            this.debug = false;
             this.request = require('request');
+            this.platform = platform;
+            this.access_token = access_token;
+            this.optionsRequest = {
+                "auth": {
+                    "bearer": this.access_token,
+                },
+                "X-Requested-With": "XMLHttpRequest"
+            };
         }
-        getUser(id) {
+        getUser(user) {
+            //Eliminar cuando tenga el campo alfanumerico
+            user.id = 123456789;
             var _this = this;
+            var options = {
+                "auth": {
+                    "bearer": this.access_token,
+                },
+                "X-Requested-With": "XMLHttpRequest"
+            };
             var userPromise = new Promise(function (resolve, reject) {
-                _this.request(_this.baseUrl + id + "?access_token=" + _this.access_token, function (error, response, body) {
+                _this.request(_this.baseUrl + _this.endpointGetUser + "/" + user.id, options, function (error, response, body) {
                     if (!error && response.statusCode == 200) {
-                        var data = JSON.parse(body);
-                        resolve(data);
+                        var savedData = JSON.parse(body);
+                        if (savedData.count > 0) {
+                            resolve(savedData.lead[0]);
+                            _this.log("Found User");
+                            _this.log(savedData.lead[0]);
+                        }
+                        else {
+                            let url = _this.baseUrl + _this.endpointCreateUser + "?name=" + user.name + "&scoped_fbid=" + user.id;
+                            _this.request(url, options, function (error, response, body) {
+                                let savedData = JSON.parse(body);
+                                resolve(savedData.lead);
+                                _this.log("Saved User");
+                                _this.log(savedData.lead);
+                            });
+                        }
                     }
                 });
+                resolve(user);
             });
             return userPromise;
+        }
+        updateUser(user) {
+            var _this = this;
+            var updatePromise = new Promise(function (resolve, reject) {
+                console.log(_this.baseUrl + _this.endpointUpdateUser + "/" + user.id);
+                _this.request.put(_this.baseUrl + _this.endpointUpdateUser + "/" + user.id, _this.optionsRequest, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        var savedData = JSON.parse(body);
+                        //resolve(savedData.lead[0]);
+                        _this.log("Update User");
+                        _this.log(savedData);
+                    }
+                }).form(user);
+            });
+            return updatePromise;
+        }
+        log(msg) {
+            if (this.debug) {
+                console.log(msg);
+            }
         }
     }
     User_1.User = User;
