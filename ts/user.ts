@@ -7,19 +7,29 @@ export module User{
         //
 
         private access_token:string
-        private baseUrl:String = " http://wepa.m8loves.me"
+        private baseUrl:String = ""
         private request;
         private platform;
 
-        private endpointGetUser:string    = "/api";
-        private endpointCreateUser:string = "/api";
+        private endpointGetUser:string    = "";
+        private endpointCreateUser:string = "";
+        private endpointUpdateUser:string = "";
         
-        public debug:Boolean = false;        
+        private optionsRequest:any;
+
+        public debug:Boolean = false;  
 
         constructor(platform, access_token) {
             this.request = require('request');
             this.platform = platform;
             this.access_token = access_token;
+            
+            this.optionsRequest = {
+                "auth": {
+                    "bearer": this.access_token,
+                },
+                "X-Requested-With" : "XMLHttpRequest" 
+            };            
         }
 
         public getUser(user:any):any{
@@ -68,12 +78,32 @@ export module User{
             return userPromise;
         }
 
+        public updateUser(user:any):any{     
+            var _this = this;
+
+            var updatePromise = new Promise(function(resolve, reject){
+                console.log(_this.baseUrl+_this.endpointUpdateUser+"/"+user.id);
+                _this.request.put(_this.baseUrl+_this.endpointUpdateUser+"/"+user.id, _this.optionsRequest, function (error, response, body) {
+
+                    if (!error && response.statusCode == 200) {   
+                            var savedData = JSON.parse(body);  
+                            //resolve(savedData.lead[0]);
+
+                            _this.log("Update User");
+                            _this.log(savedData);                                            
+                    }
+                
+                }).form(user);
+            });
+            return updatePromise;
+        }
+
         private log(msg):void{
             if(this.debug){
                 console.log(msg);
             }
             
-        }        
+        }       
 
     }
 

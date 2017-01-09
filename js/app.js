@@ -44,30 +44,46 @@ dialog.matches('getSavedData', [
     }
 ]);
 bot.dialog('/initOptions', [
-    (session) => {
-        builder.Prompts.choice(session, "¿Que deseas hacer?", ["Cambiar mi nombre", "Subir una imagen"]);
+    (session, args) => {
+        let options = {
+            maxRetries: 3,
+            retryPrompt: ["¿Esa no es una opcion valida?", "Mejor una de las opciones validas"]
+        };
+        builder.Prompts.choice(session, "¿Que desea hacer?", ["Cambiar mi nombre", "Subir una imagen", "Cancelar"], options);
     },
     (session, results) => {
-        switch (results.response.entity) {
-            case "Cambiar mi nombre":
-                session.beginDialog('/saveName');
-                break;
-            case "Subir una imagen":
-                session.beginDialog('/uploadImage');
-                break;
-            default:
-                session.endDialog();
-                break;
+        if (results.score === 1) {
+            switch (results.response.entity) {
+                case "Cambiar mi nombre":
+                    session.beginDialog('/saveName');
+                    break;
+                case "Subir una imagen":
+                    session.beginDialog('/uploadImage');
+                    break;
+                case "Cancelar":
+                    session.endDialog("Muy bien");
+                    break;
+                default:
+                    session.endDialog();
+                    break;
+            }
+        }
+        else {
+            session.endDialog("No reconocemos ninguna de las opciones ingresadas");
         }
     },
 ]);
 bot.dialog('/saveName', [
-    (session) => {
+    (session, args, next) => {
         builder.Prompts.text(session, "Su nombre actual es " + session.userData.name + ". ¿Cual quiere que sea su nuevo nombre?");
     },
-    (session, results) => {
-        //Asigno nuevo nombre para la session. Desde aqui guardar en la base de datos
+    (session, results, next) => {
+        //Defino nueva informacion para guardar
         session.userData.name = results.response;
+        userObj.updateUser({
+            "id": session.userData.id,
+            "name": session.userData.name
+        });
         session.endDialog("Muy bien " + session.userData.name);
     }
 ]);

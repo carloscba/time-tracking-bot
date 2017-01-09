@@ -4,13 +4,20 @@ var User;
     //import {Request} from "request";
     class User {
         constructor(platform, access_token) {
-            this.baseUrl = " http://wepa.m8loves.me";
-            this.endpointGetUser = "/api";
-            this.endpointCreateUser = "/api";
+            this.baseUrl = "";
+            this.endpointGetUser = "";
+            this.endpointCreateUser = "";
+            this.endpointUpdateUser = "";
             this.debug = false;
             this.request = require('request');
             this.platform = platform;
             this.access_token = access_token;
+            this.optionsRequest = {
+                "auth": {
+                    "bearer": this.access_token,
+                },
+                "X-Requested-With": "XMLHttpRequest"
+            };
         }
         getUser(user) {
             //Eliminar cuando tenga el campo alfanumerico
@@ -45,6 +52,21 @@ var User;
                 resolve(user);
             });
             return userPromise;
+        }
+        updateUser(user) {
+            var _this = this;
+            var updatePromise = new Promise(function (resolve, reject) {
+                console.log(_this.baseUrl + _this.endpointUpdateUser + "/" + user.id);
+                _this.request.put(_this.baseUrl + _this.endpointUpdateUser + "/" + user.id, _this.optionsRequest, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        var savedData = JSON.parse(body);
+                        //resolve(savedData.lead[0]);
+                        _this.log("Update User");
+                        _this.log(savedData);
+                    }
+                }).form(user);
+            });
+            return updatePromise;
         }
         log(msg) {
             if (this.debug) {
