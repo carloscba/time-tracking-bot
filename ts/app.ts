@@ -39,7 +39,7 @@ dialog.matches('greeting', [
             session.userData = data;
 
             session.send("Hola " + session.userData.name)
-            //session.beginDialog('/initOptions');
+            session.beginDialog('/initOptions');
         });
         
     },
@@ -65,7 +65,7 @@ bot.dialog('/initOptions', [
             maxRetries : 3,
             retryPrompt : ["¿Esa no es una opcion valida?","Mejor una de las opciones validas"]
         }
-        builder.Prompts.choice(session, "¿Que desea hacer?", ["Cambiar mi nombre", "Subir una imagen", "Cancelar"], options);
+        builder.Prompts.choice(session, "¿Que desea hacer?", ["Cambiar mi nombre", "Subir una imagen", "Validar email", "Cancelar"], options);
     },
 
     (session, results) => {
@@ -80,7 +80,10 @@ bot.dialog('/initOptions', [
                 break;  
                 case "Cancelar":
                     session.endDialog("Muy bien");
-                break;                            
+                break;   
+                case "Validar email":
+                     session.beginDialog('/validar');
+                break;                                            
                 default:
                     session.endDialog();
                 break;
@@ -118,4 +121,28 @@ bot.dialog('/uploadImage', [
         session.endDialog();
     }
 ]);
+
+
+
+bot.dialog('/validarEmail', builder.DialogAction.validatedPrompt(builder.PromptType.text, function (response) {
+    var expr = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return expr.test(response);
+}));
+
+bot.dialog('/validar', [
+    (session, results) => {
+        
+        session.beginDialog('/validarEmail', { prompt: "Ingrese su email" });
+
+    },
+
+    (session, results) => {
+        
+        session.endDialog("ok");
+                
+    },
+
+]);
+
+
 
