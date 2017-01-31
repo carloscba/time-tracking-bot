@@ -16,6 +16,9 @@ var connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 var bot = new builder.UniversalBot(connector);
+bot.set('localizerSettings', {
+    defaultLocale: "es" 
+});
 server.post('/api/messages', connector.listen());
 
 var model = process.env.MODEL;
@@ -132,14 +135,24 @@ bot.dialog('/validarEmail', builder.DialogAction.validatedPrompt(builder.PromptT
 bot.dialog('/validar', [
     (session, results) => {
         
-        session.beginDialog('/validarEmail', { prompt: "Ingrese su email" });
+
+        let options = {
+            maxRetries : 3,
+            prompt: "Ingrese su email",
+            retryPrompt : ["¿Esa no es una opcion valida?","Mejor una de las opciones validas"]
+        }        
+        session.beginDialog('/validarEmail', options);
 
     },
 
     (session, results) => {
         
-        session.endDialog("ok");
-                
+        if(results.resumed == 0){
+            session.endDialog(results.response);
+        }else{
+            session.endDialog("FIN");
+        }
+
     },
 
 ]);
