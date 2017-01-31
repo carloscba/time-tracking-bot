@@ -68,7 +68,7 @@ bot.dialog('/initOptions', [
             maxRetries : 3,
             retryPrompt : ["¿Esa no es una opcion valida?","Mejor una de las opciones validas"]
         }
-        builder.Prompts.choice(session, "¿Que desea hacer?", ["Cambiar mi nombre", "Subir una imagen", "Validar email", "Cancelar"], options);
+        builder.Prompts.choice(session, "¿Que desea hacer?", ["Cambiar mi nombre", "Subir una imagen", "Validar email", "Fecha", "Cancelar"], options);
     },
 
     (session, results) => {
@@ -86,7 +86,10 @@ bot.dialog('/initOptions', [
                 break;   
                 case "Validar email":
                      session.beginDialog('/validar');
-                break;                                            
+                break; 
+                case "Fecha":
+                     session.beginDialog('/fecha');
+                break;                                                            
                 default:
                     session.endDialog();
                 break;
@@ -152,6 +155,66 @@ bot.dialog('/validar', [
         }else{
             session.endDialog("FIN");
         }
+
+    },
+
+]);
+
+
+function getDate(response):any{
+        
+        var userPromise = new Promise(function(resolve, reject){
+
+            var url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/a7a9d894-4a6b-4f9a-b94b-571228d47807?subscription-key=ca872ab36e5947428d164fe8097c03dd&q="+response+"&verbose=true"
+            
+            request(url, function (error, response, body) {
+                
+                var data = JSON.parse(body);
+                if(data.topScoringIntent.intent == "date"){
+                    resolve(data);
+                }else{
+                    resolve(data);
+                }
+                
+            });
+        });
+
+        return userPromise;
+}
+
+bot.dialog('/validarFecha', builder.DialogAction.validatedPrompt(builder.PromptType.text, function (response) {
+    
+    var resp = getDate(response).then(function(e){
+        return true;
+    }).catch(function(e){
+        return false;
+    })
+    
+    
+}));
+
+bot.dialog('/fecha', [
+    (session, results) => {
+        
+        builder.Prompts.text(session, "Ingrese una fecha");
+
+    },
+
+    (session, results) => {
+        
+            var url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/a7a9d894-4a6b-4f9a-b94b-571228d47807?subscription-key=ca872ab36e5947428d164fe8097c03dd&q="+results.response+"&verbose=true"
+            
+            request(url, function (error, response, body) {
+                
+                var data = JSON.parse(body);
+                if(data.topScoringIntent.intent == "date"){
+                    session.endDialog(results.response)
+                    console.log(data);
+                }else{
+                    session.beginDialog("/fecha");
+                }
+                
+            });
 
     },
 
