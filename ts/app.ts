@@ -205,13 +205,29 @@ bot.dialog('/fecha', [
             var url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/a7a9d894-4a6b-4f9a-b94b-571228d47807?subscription-key=ca872ab36e5947428d164fe8097c03dd&q="+results.response+"&verbose=true"
             
             request(url, function (error, response, body) {
-                
+
                 var data = JSON.parse(body);
                 if(data.topScoringIntent.intent == "date"){
+                    session.userData.count = 0;
                     session.endDialog(results.response)
                     console.log(data);
                 }else{
-                    session.beginDialog("/fecha");
+                    
+                    if(session.userData.count === undefined){
+                        session.userData.count = 0
+                    }else{
+                        session.userData.count = session.userData.count+1;
+                    }
+
+                    //Al llegar al limite finalizo conversacion o reinicio
+                    if(session.userData.count >= 2){
+                        session.endDialog("Se necesita de una fecha valida para continuar");
+                    }else{
+                        session.endDialog();
+                        session.beginDialog("/fecha");
+                    }                 
+                    
+
                 }
                 
             });

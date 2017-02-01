@@ -158,11 +158,25 @@ bot.dialog('/fecha', [
         request(url, function (error, response, body) {
             var data = JSON.parse(body);
             if (data.topScoringIntent.intent == "date") {
+                session.userData.count = 0;
                 session.endDialog(results.response);
                 console.log(data);
             }
             else {
-                session.beginDialog("/fecha");
+                if (session.userData.count === undefined) {
+                    session.userData.count = 0;
+                }
+                else {
+                    session.userData.count = session.userData.count + 1;
+                }
+                //Al llegar al limite finalizo conversacion o reinicio
+                if (session.userData.count >= 2) {
+                    session.endDialog("Se necesita de una fecha valida para continuar");
+                }
+                else {
+                    session.endDialog();
+                    session.beginDialog("/fecha");
+                }
             }
         });
     },
