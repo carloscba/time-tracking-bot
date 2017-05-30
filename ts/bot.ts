@@ -2,7 +2,8 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var apiai = require('apiai');
 var dotenv = require('dotenv').config()
-
+//Users
+import {User as userObj} from "./class/user";
 //DIALOGS
 import { InputWelcome as  inputWelcome } from "./dialogs/input.welcome";
 import { InputUnknown as  inputUnknown } from "./dialogs/input.unknown";
@@ -31,6 +32,16 @@ var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
 
 bot.dialog('/', [
     (session, args) => {    
+
+        //let user = new userObj.User(session.message.user.id);
+        let user = new userObj.User(1);
+        
+        user.get().then(function (response) {
+            console.log('user.get()', response.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });;
 
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user

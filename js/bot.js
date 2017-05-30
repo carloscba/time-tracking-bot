@@ -3,6 +3,8 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var apiai = require('apiai');
 var dotenv = require('dotenv').config();
+//Users
+const user_1 = require("./class/user");
 //DIALOGS
 const input_welcome_1 = require("./dialogs/input.welcome");
 const input_unknown_1 = require("./dialogs/input.unknown");
@@ -24,6 +26,15 @@ server.post('/api/messages', connector.listen());
 var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
 bot.dialog('/', [
     (session, args) => {
+        //let user = new userObj.User(session.message.user.id);
+        let user = new user_1.User.User(1);
+        user.get().then(function (response) {
+            console.log('user.get()', response.data);
+        })
+            .catch(function (error) {
+            console.log(error);
+        });
+        ;
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user
         let isAttachment = (session.message.attachments.length > 0); //set text as input or attachment
