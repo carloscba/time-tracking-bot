@@ -6,6 +6,7 @@ var dotenv = require('dotenv').config()
 //DIALOGS
 import { InputWelcome as  inputWelcome } from "./dialogs/input.welcome";
 import { InputUnknown as  inputUnknown } from "./dialogs/input.unknown";
+import { InputTask as  inputtask } from "./dialogs/input.task";
 
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -45,25 +46,27 @@ bot.dialog('/', [
             request.on('response', function(response) {
                 try{
                     let action = response.result.action;
-                    console.log('action', action);
-
                     let fulfillment = response.result.fulfillment;
+                    let score = response.result.score;
+                    console.log('action', action);
+                    console.log('score', score);
+
                     session.endDialog();
-                    session.beginDialog(action, fulfillment);
+                    session.beginDialog(action, fulfillment, score);
 
                 }catch(e){
                     console.log('request.on response error', e)
                     session.send('Error on response');
                 }
                 
-            });//request.on('response'
+            });//request.on('response')
             
             request.on('error', function(error) {
                 
                 console.log('request.on error', error)
                 session.send('Error on response');
 
-            });//request.on('error'
+            });//request.on('error')
             
             request.end();        
 
@@ -79,3 +82,4 @@ bot.dialog('/', [
 
 bot.dialog('input.welcome', inputWelcome.dialog());
 bot.dialog('input.unknown', inputUnknown.dialog());
+bot.dialog('input.task', inputtask.dialog());
