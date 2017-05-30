@@ -1,0 +1,31 @@
+{
+    id:'4f78e401-7be9-4ed0-929c-bc652e88503d',
+    timestamp:'2017-05-30T14:55:00.688Z',
+    lang:'es',
+    result:{
+        source:'agent',
+        resolvedQuery:'hola',
+        action:'input.welcome',
+        actionIncomplete:false,
+        parameters:{
+        },
+        contexts:[
+        ],
+        metadata:{
+            intentId:'920f2158-9a90-4300-b039-8f08f3f0e911',
+            webhookUsed:'false',
+            webhookForSlotFillingUsed:'false',
+            intentName:'intentWelcome'
+        },
+        fulfillment:{
+            speech:'¡Hey!',
+            messages:[Object]
+        },
+        score:1
+    },
+    status:{
+        code:200,
+        errorType:'success'
+    },
+    sessionId:'2i781k0bd3jdnahli'
+}
