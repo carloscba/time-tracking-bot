@@ -6,7 +6,8 @@ var dotenv = require('dotenv').config()
 //DIALOGS
 import { InputWelcome as  inputWelcome } from "./dialogs/input.welcome";
 import { InputUnknown as  inputUnknown } from "./dialogs/input.unknown";
-import { InputTask as  inputtask } from "./dialogs/input.task";
+import { InputTask as  inputTask } from "./dialogs/input.task";
+import { InputTaskList as  inputTaskList } from "./dialogs/input.tasklist";
 
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -46,13 +47,14 @@ bot.dialog('/', [
             request.on('response', function(response) {
                 try{
                     let action = response.result.action;
-                    let fulfillment = response.result.fulfillment;
-                    let score = response.result.score;
+                    let aiResult = response.result;
+                    
                     console.log('action', action);
-                    console.log('score', score);
+                    console.log('score', aiResult.score);
 
                     session.endDialog();
-                    session.beginDialog(action, fulfillment, score);
+                    callAction(action, aiResult, session);
+                    
 
                 }catch(e){
                     console.log('request.on response error', e)
@@ -71,8 +73,8 @@ bot.dialog('/', [
             request.end();        
 
         }else{//if(!isAttachment)
-
-
+            
+            //if message is an Attachment
 
         }//if(!isAttachment)
         
@@ -80,6 +82,20 @@ bot.dialog('/', [
     },
 ]);
 
-bot.dialog('input.welcome', inputWelcome.dialog());
+let callAction = function(action, aiResult, session){
+    
+    console.log('session.message.user', session.message.user);
+
+    //save unknown query
+    if(action === 'input.unknown'){
+        session.userData.unknownQuery = {
+            'resolvedQuery' : aiResult.resolvedQuery
+        }   
+    }
+    session.beginDialog(action, aiResult);
+}
+
 bot.dialog('input.unknown', inputUnknown.dialog());
-bot.dialog('input.task', inputtask.dialog());
+bot.dialog('input.welcome', inputWelcome.dialog());
+bot.dialog('input.task', inputTask.dialog());
+bot.dialog('input.tasklist', inputTaskList.dialog());

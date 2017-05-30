@@ -7,6 +7,7 @@ var dotenv = require('dotenv').config();
 const input_welcome_1 = require("./dialogs/input.welcome");
 const input_unknown_1 = require("./dialogs/input.unknown");
 const input_task_1 = require("./dialogs/input.task");
+const input_tasklist_1 = require("./dialogs/input.tasklist");
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
@@ -35,12 +36,11 @@ bot.dialog('/', [
             request.on('response', function (response) {
                 try {
                     let action = response.result.action;
-                    let fulfillment = response.result.fulfillment;
-                    let score = response.result.score;
+                    let aiResult = response.result;
                     console.log('action', action);
-                    console.log('score', score);
+                    console.log('score', aiResult.score);
                     session.endDialog();
-                    session.beginDialog(action, fulfillment, score);
+                    callAction(action, aiResult, session);
                 }
                 catch (e) {
                     console.log('request.on response error', e);
@@ -57,7 +57,18 @@ bot.dialog('/', [
         } //if(!isAttachment)
     },
 ]);
-bot.dialog('input.welcome', input_welcome_1.InputWelcome.dialog());
+let callAction = function (action, aiResult, session) {
+    console.log('session.message.user', session.message.user);
+    //save unknown query
+    if (action === 'input.unknown') {
+        session.userData.unknownQuery = {
+            'resolvedQuery': aiResult.resolvedQuery
+        };
+    }
+    session.beginDialog(action, aiResult);
+};
 bot.dialog('input.unknown', input_unknown_1.InputUnknown.dialog());
+bot.dialog('input.welcome', input_welcome_1.InputWelcome.dialog());
 bot.dialog('input.task', input_task_1.InputTask.dialog());
+bot.dialog('input.tasklist', input_tasklist_1.InputTaskList.dialog());
 //# sourceMappingURL=bot.js.map

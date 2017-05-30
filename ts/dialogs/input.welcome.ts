@@ -4,8 +4,8 @@ export module InputWelcome {
     export function dialog() {
             
         const dialog = [
-            (session, fulfillment) => {
-                session.endDialog(fulfillment.speech);
+            (session, aiResult) => {
+                session.endDialog(aiResult.fulfillment.speech);
             }
         ];//var dialog
         

@@ -6,7 +6,7 @@ export module InputTask {
         const dialog = [
 
             //Prompt client name
-            (session, fulfillment) => {
+            (session, aiResult) => {
                 builder.Prompts.text(session, '1/2 - Indica el cliente');
             },
             
@@ -37,6 +37,7 @@ export module InputTask {
             
             //end dialog
             (session, results) => {
+                session.endDialog('Se ha creado la nueva tarea');
                 console.log(session.dialogData);
             }
 
