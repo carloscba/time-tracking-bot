@@ -33,9 +33,21 @@ var User;
                 console.log('-->ERROR typeof(data) in user.push()');
             }
         }
-        update() {
+        /*
+        user.update(session.userData.profile.id, {name : 'new name',admin:1}).then(function(data){
+            console.log('----> Update', data);
+        });
+        */
+        update(id, data) {
+            if (typeof (data) === 'object') {
+                let ref = this.firebase.database().ref('users');
+                let updateRef = ref.child('user-' + id);
+                return updateRef.update(data);
+            }
         }
-        remove() {
+        remove(id) {
+            let ref = this.firebase.database().ref('users');
+            return ref.child('user-' + id).remove();
         }
     }
     User_1.User = User;

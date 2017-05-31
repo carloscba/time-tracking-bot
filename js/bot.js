@@ -62,7 +62,10 @@ bot.use({
 });
 bot.dialog('/', [
     (session, args) => {
-        console.log('session.userData', session.userData);
+        console.log('--> session.userData', session.userData);
+        user.remove(session.userData.profile.id).then(function () {
+            console.log('REMOVE');
+        });
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user
         let isAttachment = (session.message.attachments.length > 0); //set text as input or attachment
@@ -97,7 +100,6 @@ bot.dialog('/', [
     },
 ]);
 let callAction = function (action, aiResult, session) {
-    console.log('--> session.message.user', session.message.user);
     //save unknown query
     if (action === 'input.unknown') {
         session.userData.unknownQuery = {
