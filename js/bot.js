@@ -24,10 +24,16 @@ bot.set('localizerSettings', {
 });
 server.post('/api/messages', connector.listen());
 var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
-var user = new user_1.User.User();
+const serviceAccount = require('../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json');
+var firebase = require("firebase-admin");
+firebase.initializeApp({
+    credential: firebase.credential.cert(serviceAccount),
+    databaseURL: 'https://time-tracking-bot.firebaseio.com'
+});
+var user = new user_1.User.User(firebase);
 bot.use({
     botbuilder: function (session, next) {
-        console.log('--> session.userData.profile === undefined', session.userData.profile === undefined);
+        console.log('--> session.userData.profile', session.userData.profile);
         if (session.userData.profile === undefined) {
             user.get(session.message.user.id).then(function (snapshot) {
                 console.log('--> snapshot.val()', snapshot.val());
@@ -63,9 +69,6 @@ bot.use({
 bot.dialog('/', [
     (session, args) => {
         console.log('--> session.userData', session.userData);
-        user.remove(session.userData.profile.id).then(function () {
-            console.log('REMOVE');
-        });
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user
         let isAttachment = (session.message.attachments.length > 0); //set text as input or attachment
@@ -111,5 +114,5 @@ let callAction = function (action, aiResult, session) {
 bot.dialog('input.unknown', input_unknown_1.InputUnknown.dialog());
 bot.dialog('input.welcome', input_welcome_1.InputWelcome.dialog());
 bot.dialog('input.task', input_task_1.InputTask.dialog());
-bot.dialog('input.tasklist', input_tasklist_1.InputTaskList.dialog());
+bot.dialog('input.tasklist', input_tasklist_1.InputTaskList.dialog(firebase));
 //# sourceMappingURL=bot.js.map

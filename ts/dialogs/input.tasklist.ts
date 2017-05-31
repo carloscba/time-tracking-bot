@@ -1,18 +1,24 @@
 var builder = require('botbuilder');
 
+//Users
+import {Client as clientObj} from "../class/client";
+
 export module InputTaskList {
-    export function dialog() {
-            
+    export function dialog(firebase) {
+        
+        var client = new clientObj.Client(firebase);
+
         const dialog = [
 
             //list task
             (session, aiResult) => {
-                const hasTask = true; //pending
-                if(hasTask){
-                    session.endDialog('Listado de tasks');
-                }else{
-                    session.endDialog('No tiene tareas pendientes');
-                }
+                session.sendTyping();
+
+                client.getAll().on('child_added', function(snapshot) {
+                    session.send(snapshot.val().name);
+                });
+
+                session.endDialog();
             },
 
         ];//var dialog

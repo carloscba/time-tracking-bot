@@ -5,16 +5,8 @@ export module User{
         private id:any;
         private firebase:any;
         
-        constructor() {
-            
-            const serviceAccount = require("../../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json");
-
-            this.firebase = require("firebase-admin");
-            this.firebase.initializeApp({
-                credential: this.firebase.credential.cert(serviceAccount),
-                databaseURL: "https://time-tracking-bot.firebaseio.com"
-            });              
-            
+        constructor(firebase:any) {
+            this.firebase = firebase;
         }
         
         /**

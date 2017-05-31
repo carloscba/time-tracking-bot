@@ -29,11 +29,21 @@ bot.set('localizerSettings', {
 server.post('/api/messages', connector.listen());
 
 var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
-var user = new userObj.User();
+
+
+const serviceAccount = require('../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json');
+
+var firebase = require("firebase-admin");
+firebase.initializeApp({
+    credential: firebase.credential.cert(serviceAccount),
+    databaseURL: 'https://time-tracking-bot.firebaseio.com'
+});              
+
+var user = new userObj.User(firebase);
 
 bot.use({
     botbuilder: function (session, next) {
-        console.log('--> session.userData.profile === undefined', session.userData.profile === undefined);
+        console.log('--> session.userData.profile', session.userData.profile);
         if(session.userData.profile === undefined){
             user.get(session.message.user.id).then(function (snapshot) {
                 console.log('--> snapshot.val()', snapshot.val());
@@ -136,4 +146,4 @@ let callAction = function(action, aiResult, session){
 bot.dialog('input.unknown', inputUnknown.dialog());
 bot.dialog('input.welcome', inputWelcome.dialog());
 bot.dialog('input.task', inputTask.dialog());
-bot.dialog('input.tasklist', inputTaskList.dialog());
+bot.dialog('input.tasklist', inputTaskList.dialog(firebase));
