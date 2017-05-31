@@ -2,19 +2,40 @@
 var User;
 (function (User_1) {
     class User {
-        constructor(id) {
-            this.basePath = 'https://jsonplaceholder.typicode.com';
-            this.axios = require('axios');
-            this.id = id;
+        constructor() {
+            const serviceAccount = require("../../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json");
+            this.firebase = require("firebase-admin");
+            this.firebase.initializeApp({
+                credential: this.firebase.credential.cert(serviceAccount),
+                databaseURL: "https://time-tracking-bot.firebaseio.com"
+            });
         }
-        get() {
-            return this.axios.get(this.basePath + '/users/' + this.id);
+        get(id) {
+            console.log('--> /users/[id]', '/users/' + id);
+            let userRef = this.firebase.database().ref('/users/user-' + id);
+            return userRef.once('value');
         }
-        post() {
+        /*
+        {
+            'id': randomNumber,
+            'name': 'Name'+randomNumber
         }
-        put() {
+        */
+        push(data) {
+            if (typeof (data) === 'object' && data.id && data.name) {
+                let ref = this.firebase.database().ref('users');
+                return ref.child('user-' + data.id).set({
+                    id: data.id,
+                    name: data.name
+                });
+            }
+            else {
+                console.log('-->ERROR typeof(data) in user.push()');
+            }
         }
-        delete() {
+        update() {
+        }
+        remove() {
         }
     }
     User_1.User = User;

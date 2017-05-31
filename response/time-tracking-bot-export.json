@@ -1,0 +1,18 @@
+{
+  "clients" : {
+    "client1" : {
+      "id" : 1,
+      "name" : "Vallarta"
+    }
+  },
+  "users" : {
+    "user1" : {
+      "id" : 1,
+      "name" : "nombre"
+    },
+    "user2" : {
+      "id" : 2,
+      "name" : "user2"
+    }
+  }
+}

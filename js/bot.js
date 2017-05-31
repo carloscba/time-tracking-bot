@@ -12,7 +12,7 @@ const input_task_1 = require("./dialogs/input.task");
 const input_tasklist_1 = require("./dialogs/input.tasklist");
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log('%s listening to %s', server.name, server.url);
+    console.log('--> %s listening to %s', server.name, server.url);
 });
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -24,21 +24,49 @@ bot.set('localizerSettings', {
 });
 server.post('/api/messages', connector.listen());
 var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
+var user = new user_1.User.User();
+bot.use({
+    botbuilder: function (session, next) {
+        console.log('--> session.userData.profile === undefined', session.userData.profile === undefined);
+        if (session.userData.profile === undefined) {
+            user.get(session.message.user.id).then(function (snapshot) {
+                console.log('--> snapshot.val()', snapshot.val());
+                if (snapshot.val() === null) {
+                    //create user if not exist
+                    user.push({
+                        id: session.message.user.id,
+                        name: session.message.user.name
+                    }).then(function () {
+                        console.log('--> SUCCESS user add');
+                        session.userData.profile = snapshot.val();
+                        next();
+                    }).catch(function (error) {
+                        console.log('--> ERROR user add');
+                    });
+                }
+                else {
+                    console.log('--> SUCCESS user get', snapshot.val());
+                    session.userData.profile = snapshot.val();
+                    next();
+                }
+            })
+                .catch(function (error) {
+                console.log('--> ERROR user get');
+            });
+        }
+        else {
+            console.log('--> User exist: ', session.userData);
+            next();
+        } //if(session.userData.id === null){
+    }
+});
 bot.dialog('/', [
     (session, args) => {
-        //let user = new userObj.User(session.message.user.id);
-        let user = new user_1.User.User(1);
-        user.get().then(function (response) {
-            console.log('user.get()', response.data);
-        })
-            .catch(function (error) {
-            console.log(error);
-        });
-        ;
+        console.log('session.userData', session.userData);
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user
         let isAttachment = (session.message.attachments.length > 0); //set text as input or attachment
-        console.log('isAttachment', isAttachment);
+        console.log('--> isAttachment', isAttachment);
         if (!isAttachment) {
             session.sendTyping();
             var request = botai.textRequest(msg, {
@@ -48,18 +76,18 @@ bot.dialog('/', [
                 try {
                     let action = response.result.action;
                     let aiResult = response.result;
-                    console.log('action', action);
-                    console.log('score', aiResult.score);
+                    console.log('--> action', action);
+                    console.log('--> score', aiResult.score);
                     session.endDialog();
                     callAction(action, aiResult, session);
                 }
                 catch (e) {
-                    console.log('request.on response error', e);
+                    console.log('--> request.on response error', e);
                     session.send('Error on response');
                 }
             }); //request.on('response')
             request.on('error', function (error) {
-                console.log('request.on error', error);
+                console.log('--> request.on error', error);
                 session.send('Error on response');
             }); //request.on('error')
             request.end();
@@ -69,7 +97,7 @@ bot.dialog('/', [
     },
 ]);
 let callAction = function (action, aiResult, session) {
-    console.log('session.message.user', session.message.user);
+    console.log('--> session.message.user', session.message.user);
     //save unknown query
     if (action === 'input.unknown') {
         session.userData.unknownQuery = {

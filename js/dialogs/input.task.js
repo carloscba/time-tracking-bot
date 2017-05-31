@@ -10,9 +10,9 @@ var InputTask;
             },
             //save client name
             (session, results, next) => {
-                console.log('1/2 - typeof(results.response)', typeof (results.response));
+                console.log('--> 1/2 - typeof(results.response)', typeof (results.response));
                 if (typeof (results.response) === 'string') {
-                    console.log('1/2 - results.response', results.response);
+                    console.log('--> 1/2 - results.response', results.response);
                     session.dialogData.client = results.response;
                     next();
                 }
@@ -23,9 +23,9 @@ var InputTask;
             },
             //save task name
             (session, results, next) => {
-                console.log('2/2 - typeof(results.response)', typeof (results.response));
+                console.log('--> 2/2 - typeof(results.response)', typeof (results.response));
                 if (typeof (results.response) === 'string') {
-                    console.log('2/2 - results.response', results.response);
+                    console.log('--> 2/2 - results.response', results.response);
                     session.dialogData.name = results.response;
                     next();
                 }

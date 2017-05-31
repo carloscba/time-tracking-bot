@@ -3,28 +3,54 @@ export module User{
     export class User{
         
         private id:any;
-        private axios:any;
-
-        private basePath:string = 'https://jsonplaceholder.typicode.com';
+        private firebase:any;
         
-        constructor(id) {
-            this.axios = require('axios');
-            this.id = id;
-        }
+        constructor() {
+            
+            const serviceAccount = require("../../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json");
 
-        public get():any{
-            return this.axios.get( this.basePath +'/users/'+ this.id);
-        }
-
-        public post():any{
-
-        }        
-
-        public put():any{     
+            this.firebase = require("firebase-admin");
+            this.firebase.initializeApp({
+                credential: this.firebase.credential.cert(serviceAccount),
+                databaseURL: "https://time-tracking-bot.firebaseio.com"
+            });              
             
         }
 
-        public delete():any{     
+        public get(id):any{
+            
+            console.log('--> /users/[id]', '/users/'+ id)
+
+            let userRef = this.firebase.database().ref('/users/user-'+ id);   
+            return userRef.once('value');
+        }
+
+        /*
+        {
+            'id': randomNumber,
+            'name': 'Name'+randomNumber
+        }        
+        */
+        public push(data:any):any{
+
+            if(typeof(data) === 'object' && data.id && data.name){
+                let ref = this.firebase.database().ref('users');
+                return ref.child('user-'+ data.id).set({                    
+                    id: data.id,
+                    name: data.name
+                });
+            }else{
+                console.log('-->ERROR typeof(data) in user.push()');
+            }
+            
+
+        }        
+
+        public update():any{     
+            
+        }
+
+        public remove():any{     
             
         }        
 

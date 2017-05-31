@@ -5,7 +5,7 @@ var InputUnknown;
     function dialog() {
         const dialog = [
             (session, aiResult) => {
-                console.log('InputUnknown', aiResult);
+                console.log('--> InputUnknown', aiResult);
                 session.endDialog(aiResult.fulfillment.speech);
             }
         ]; //var dialog
