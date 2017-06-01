@@ -53,7 +53,7 @@ bot.use({
                     name : session.message.user.name
                 }).then(function(response){
                     console.log('--> SUCCESS user add:', response);
-                    session.userData.profile = response;
+                    session.userData.profile = response.data;
                     next();
                 }).catch(function (error) {
                     console.log('--> ERROR user add', error);        
