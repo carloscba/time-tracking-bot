@@ -31,44 +31,35 @@ server.post('/api/messages', connector.listen());
 var botai = apiai(process.env.APIAI_CLIENT_ACCESS_TOKEN);
 
 
-const serviceAccount = require('../time-tracking-bot-firebase-adminsdk-wrl4r-3023809fe3.json');
 
-var firebase = require("firebase-admin");
-firebase.initializeApp({
-    credential: firebase.credential.cert(serviceAccount),
-    databaseURL: 'https://time-tracking-bot.firebaseio.com'
-});              
+var user = new userObj.User();
 
-var user = new userObj.User(firebase);
 
 bot.use({
     botbuilder: function (session, next) {
         console.log('--> session.userData.profile', session.userData.profile);
         if(session.userData.profile === undefined){
-            user.get(session.message.user.id).then(function (snapshot) {
-                console.log('--> snapshot.val()', snapshot.val());
+            
+            user.get(3).then(function (response) {
+                
+                console.log('--> SUCCESS user get: ', response.data);
+                session.userData.profile = response.data;
+                next();
 
-                if(snapshot.val() === null){
-                    //create user if not exist
-                    user.push({
-                        id : session.message.user.id,
-                        name : session.message.user.name
-                    }).then(function(){
-                        console.log('--> SUCCESS user add');
-                        session.userData.profile = snapshot.val();
-                        next();
-                    }).catch(function (error) {
-                        console.log('--> ERROR user add');        
-                    });
-                }else{
-                    console.log('--> SUCCESS user get', snapshot.val());
-                    session.userData.profile = snapshot.val();
+            }).catch(function (error) {
+                console.log('--> ERROR user get: ', error);
+                user.post({
+                    id : session.message.user.id,
+                    name : session.message.user.name
+                }).then(function(response){
+                    console.log('--> SUCCESS user add:', response);
+                    session.userData.profile = response;
                     next();
-                }
-            })
-            .catch(function (error) {
-                console.log('--> ERROR user get');
+                }).catch(function (error) {
+                    console.log('--> ERROR user add', error);        
+                });                
             });        
+        
         }else{
             console.log('--> User exist: ', session.userData);
             next();
@@ -146,4 +137,4 @@ let callAction = function(action, aiResult, session){
 bot.dialog('input.unknown', inputUnknown.dialog());
 bot.dialog('input.welcome', inputWelcome.dialog());
 bot.dialog('input.task', inputTask.dialog());
-bot.dialog('input.tasklist', inputTaskList.dialog(firebase));
+bot.dialog('input.tasklist', inputTaskList.dialog());

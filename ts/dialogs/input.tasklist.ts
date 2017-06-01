@@ -4,9 +4,11 @@ var builder = require('botbuilder');
 import {Client as clientObj} from "../class/client";
 
 export module InputTaskList {
-    export function dialog(firebase) {
+    export function dialog() {
         
-        var client = new clientObj.Client(firebase);
+        return false;
+
+        var client = new clientObj.Client();
 
         const dialog = [
 

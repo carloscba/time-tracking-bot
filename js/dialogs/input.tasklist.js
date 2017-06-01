@@ -4,15 +4,15 @@ var builder = require('botbuilder');
 const client_1 = require("../class/client");
 var InputTaskList;
 (function (InputTaskList) {
-    function dialog(firebase) {
-        var client = new client_1.Client.Client(firebase);
+    function dialog() {
+        return false;
+        var client = new client_1.Client.Client();
         const dialog = [
             //list task
             (session, aiResult) => {
                 session.sendTyping();
-                client.getAll().on("child_added", function (snapshot) {
+                client.getAll().on('child_added', function (snapshot) {
                     session.send(snapshot.val().name);
-                    //console.log(snapshot.key + " was " + snapshot.val().name + " m tall");
                 });
                 session.endDialog();
             },

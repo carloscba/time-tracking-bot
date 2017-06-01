@@ -26,7 +26,7 @@ var Client;
         getAll() {
             console.log('--> /clients', '/clients');
             let ref = this.firebase.database().ref('/clients');
-            return ref.orderByChild("name");
+            return ref.orderByChild('name');
         }
     }
     Client_1.Client = Client;

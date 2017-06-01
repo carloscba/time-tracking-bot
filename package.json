@@ -4,7 +4,8 @@
   "description": "Test bot framework",
   "main": "app.js",
   "scripts": {
-    "test": "node js/app.js"
+    "start": "node js/bot",
+    "test": "mocha"
   },
   "author": "carloscba",
   "license": "ISC",
@@ -17,5 +18,10 @@
     "request": "^2.79.0",
     "require": "^2.4.20",
     "restify": "^4.3.0"
+  },
+  "devDependencies": {
+    "describe": "^1.2.0",
+    "expect": "^1.20.2",
+    "mocha": "^3.4.2"
   }
 }
