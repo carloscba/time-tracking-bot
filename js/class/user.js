@@ -5,13 +5,6 @@ var User;
         constructor() {
             this.endPoint = 'http://localhost:8000/usersbot';
             this.axios = require('axios');
-            /*
-            this.axios.interceptors.response.use(function (response) {
-                return response;
-            }, function (error) {
-                return Promise.reject(error);
-            });
-            */
         }
         /**
          * get a user by id

@@ -1,26 +1,36 @@
 var builder = require('botbuilder');
+var winston = require('winston');
+winston.level = 'debug';
 
 //Users
 import {Client as clientObj} from "../class/client";
+import {Task as taskObj} from "../class/task";
 
 export module InputTaskList {
     export function dialog() {
         
-        return false;
-
-        var client = new clientObj.Client();
+        const client = new clientObj.Client();
+        const task = new taskObj.Task();
 
         const dialog = [
 
             //list task
             (session, aiResult) => {
+                
                 session.sendTyping();
+                task.get(null).then(function(response){
+                    winston.log('debug', 'list of tasks', response.data.results);
+                    let tasks = response.data.results;
 
-                client.getAll().on('child_added', function(snapshot) {
-                    session.send(snapshot.val().name);
+                    tasks.map(function(task){
+                        session.send(task.description);
+                    })
+                    session.endDialog();
+
+                }).catch(function(error){
+                    winston.log('debug', 'Error on list tasks');
+                    session.endDialog('Se ha producido un error al listar las tareas');
                 });
-
-                session.endDialog();
             },
 
         ];//var dialog

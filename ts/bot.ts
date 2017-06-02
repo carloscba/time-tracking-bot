@@ -1,7 +1,10 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var apiai = require('apiai');
-var dotenv = require('dotenv').config()
+var dotenv = require('dotenv').config();
+
+var winston = require('winston');
+winston.level = 'debug';
 //Users
 import {User as userObj} from "./class/user";
 //DIALOGS
@@ -12,7 +15,7 @@ import { InputTaskList as  inputTaskList } from "./dialogs/input.tasklist";
 
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('--> %s listening to %s', server.name, server.url); 
+   winston.log('debug', 'run server');
 });
   
 var connector = new builder.ChatConnector({
@@ -42,26 +45,26 @@ bot.use({
             
             user.get(3).then(function (response) {
                 
-                console.log('--> SUCCESS user get: ', response.data);
+                winston.log('debug', 'SUCCESS user get: ', response.data);
                 session.userData.profile = response.data;
                 next();
 
             }).catch(function (error) {
-                console.log('--> ERROR user get: ', error);
+                winston.log('debug', 'ERROR user get: ', error);
                 user.post({
                     id : session.message.user.id,
                     name : session.message.user.name
                 }).then(function(response){
-                    console.log('--> SUCCESS user add:', response);
+                    winston.log('debug', 'SUCCESS user add:', response);
                     session.userData.profile = response.data;
                     next();
                 }).catch(function (error) {
-                    console.log('--> ERROR user add', error);        
+                    winston.log('debug', 'ERROR user add', error);        
                 });                
             });        
         
         }else{
-            console.log('--> User exist: ', session.userData);
+            winston.log('debug', 'User exist: ', session.userData);
             next();
         }//if(session.userData.id === null){
         
@@ -72,16 +75,15 @@ bot.use({
 bot.dialog('/', [
     (session, args) => {    
         
-        console.log('--> session.userData', session.userData);
+        winston.log('debug', 'session.userData', session.userData);
 
         let msg = session.message.text; //input by user
         let sessionId = session.message.address.id; //set session for user
         let isAttachment = (session.message.attachments.length > 0); //set text as input or attachment
-        console.log('--> isAttachment', isAttachment)
+        
+        session.sendTyping();
 
         if(!isAttachment){
-            session.sendTyping();
-   
             var request = botai.textRequest(msg, {
                 sessionId: sessionId
             });
@@ -91,15 +93,14 @@ bot.dialog('/', [
                     let action = response.result.action;
                     let aiResult = response.result;
                     
-                    console.log('--> action', action);
-                    console.log('--> score', aiResult.score);
+                    winston.log('debug', 'action', action);
+                    winston.log('debug', 'score', aiResult.score);
 
-                    session.endDialog();
                     callAction(action, aiResult, session);
                     
 
                 }catch(e){
-                    console.log('--> request.on response error', e)
+                    winston.log('debug', 'request.on response error', e)
                     session.send('Error on response');
                 }
                 
@@ -107,7 +108,7 @@ bot.dialog('/', [
             
             request.on('error', function(error) {
                 
-                console.log('--> request.on error', error)
+                winston.log('debug', 'request.on error', error)
                 session.send('Error on response');
 
             });//request.on('error')

@@ -1,44 +1,97 @@
 var builder = require('botbuilder');
+var winston = require('winston');
+winston.level = 'debug';
+
+import {Client as clientObj} from "../class/client";
+import {Task as taskObj} from "../class/task";
 
 export module InputTask {
     export function dialog() {
-            
+        
+        const client = new clientObj.Client();
+        const task = new taskObj.Task();
+
         const dialog = [
 
             //Prompt client name
             (session, aiResult) => {
-                builder.Prompts.text(session, '1/2 - Indica el cliente');
+                
+                session.dialogData.task = {
+                    client_name : '',
+                    description : ''
+                };
+                
+                session.sendTyping();
+                client.get(null).then(function(response){
+
+                    let clientList = response.data.results;
+                    let clientListPrompt = [];
+                    
+                    clientList.map(function(client){
+                        clientListPrompt.push(client.name);
+                    })
+
+                    winston.log('debug', 'Prompt client list');
+                    winston.log('debug','clientListPrompt', clientListPrompt);
+
+                    builder.Prompts.choice(session, "Indica el cliente", clientListPrompt);
+
+                }).catch(function(error){
+                    winston.log('Error in input.task.ts step 1');
+                })
+
             },
             
             //save client name
             (session, results, next) => {
-                console.log('--> 1/2 - typeof(results.response)', typeof(results.response));
-                if(typeof(results.response) === 'string'){
-                    console.log('--> 1/2 - results.response', results.response);
-                    session.dialogData.client = results.response;
+                
+                winston.log('debug', 'Store client name');
+                winston.log('debug','typeof(results.response)', typeof(results.response));
+                winston.log('debug', 'results.response', results.response);
+                
+                if(typeof(results.response) === 'object'){
+                    session.dialogData.task.client_name = results.response.entity;
                     next();
                 }
             },
 
             //prompt task name
             (session, results) => {
-                builder.Prompts.text(session, '2/2 - Indica el nombre de la tarea');         
+                builder.Prompts.text(session, '2/2 - Describe la tarea');         
             },
 
             //save task name
             (session, results, next) => {
-                console.log('--> 2/2 - typeof(results.response)', typeof(results.response));
+
+                winston.log('debug', 'Store task description');
+                winston.log('debug','typeof(results.response)', typeof(results.response));
+                winston.log('debug', 'results.response', results.response);
+
                 if(typeof(results.response) === 'string'){
-                    console.log('--> 2/2 - results.response', results.response);
-                    session.dialogData.name = results.response;
+                    session.dialogData.task.description = results.response;
                     next();
                 }
             },            
             
             //end dialog
             (session, results) => {
-                session.endDialog('Se ha creado la nueva tarea');
-                console.log(session.dialogData);
+                
+                winston.log('debug', 'session.dialogData.task', session.dialogData.task)
+
+                session.sendTyping();
+                task.post({
+                    client_name : session.dialogData.task.client_name,
+                    description : session.dialogData.task.description
+                }).then(function(response){
+                    winston.log('debug', 'New task added', response.data)
+                    session.endDialog('Se ha creado la nueva tarea');
+                }).catch(function(error){
+                    winston.log('debug', 'Error task added', error)
+                    session.endDialog('Se produjo un error al crear la tarea');                    
+                })
+                
+                
+
             }
 
         ];//var dialog
