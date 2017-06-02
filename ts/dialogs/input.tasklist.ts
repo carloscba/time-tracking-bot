@@ -1,4 +1,5 @@
 var builder = require('botbuilder');
+var dotenv = require('dotenv').config();
 var winston = require('winston');
 winston.level = 'debug';
 
@@ -9,8 +10,8 @@ import {Task as taskObj} from "../class/task";
 export module InputTaskList {
     export function dialog() {
         
-        const client = new clientObj.Client();
-        const task = new taskObj.Task();
+        const client = new clientObj.Client(process.env.DJANGO_ACCESS_TOKEN);
+        const task = new taskObj.Task(process.env.DJANGO_ACCESS_TOKEN);
 
         const dialog = [
 

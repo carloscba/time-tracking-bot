@@ -2,9 +2,10 @@
 var Task;
 (function (Task_1) {
     class Task {
-        constructor() {
+        constructor(token) {
             this.endPoint = 'http://localhost:8000/tasks';
             this.axios = require('axios');
+            this.axios.defaults.headers.common['Authorization'] = 'JWT ' + token;
         }
         /**
          * get a task by id

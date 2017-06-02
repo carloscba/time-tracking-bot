@@ -2,9 +2,10 @@
 var Client;
 (function (Client_1) {
     class Client {
-        constructor() {
+        constructor(token) {
             this.endPoint = 'http://localhost:8000/clients';
             this.axios = require('axios');
+            this.axios.defaults.headers.common['Authorization'] = 'JWT ' + token;
         }
         /**
          * get a client by id

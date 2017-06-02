@@ -1,11 +1,12 @@
 var expect = require('expect');
+var dotenv = require('dotenv').config();
 
 const user_1 = require("../js/class/user");
-var user = new user_1.User.User();
+var user = new user_1.User.User(process.env.DJANGO_ACCESS_TOKEN);
 
 describe('User Class', function() {
     
-    let idUser = 3;
+    let idUser = 1;
 
     it('List users', function(done) {  
         user.get().then(function(response){

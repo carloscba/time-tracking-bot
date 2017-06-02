@@ -6,8 +6,9 @@ export module Client{
         private endPoint:string = 'http://localhost:8000/clients';
         private axios:any;
 
-        constructor() {
+        constructor(token) {
             this.axios = require('axios');
+            this.axios.defaults.headers.common['Authorization'] = 'JWT '+ token;
         }
         
         /**

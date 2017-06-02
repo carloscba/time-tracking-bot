@@ -1,5 +1,6 @@
 "use strict";
 var builder = require('botbuilder');
+var dotenv = require('dotenv').config();
 var winston = require('winston');
 winston.level = 'debug';
 //Users
@@ -8,8 +9,8 @@ const task_1 = require("../class/task");
 var InputTaskList;
 (function (InputTaskList) {
     function dialog() {
-        const client = new client_1.Client.Client();
-        const task = new task_1.Task.Task();
+        const client = new client_1.Client.Client(process.env.DJANGO_ACCESS_TOKEN);
+        const task = new task_1.Task.Task(process.env.DJANGO_ACCESS_TOKEN);
         const dialog = [
             //list task
             (session, aiResult) => {

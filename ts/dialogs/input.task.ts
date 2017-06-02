@@ -1,4 +1,5 @@
 var builder = require('botbuilder');
+var dotenv = require('dotenv').config();
 var winston = require('winston');
 winston.level = 'debug';
 
@@ -8,8 +9,8 @@ import {Task as taskObj} from "../class/task";
 export module InputTask {
     export function dialog() {
         
-        const client = new clientObj.Client();
-        const task = new taskObj.Task();
+        const client = new clientObj.Client(process.env.DJANGO_ACCESS_TOKEN);
+        const task = new taskObj.Task(process.env.DJANGO_ACCESS_TOKEN);
 
         const dialog = [
 
@@ -57,7 +58,7 @@ export module InputTask {
 
             //prompt task name
             (session, results) => {
-                builder.Prompts.text(session, '2/2 - Describe la tarea');         
+                builder.Prompts.text(session, 'Describe la tarea');         
             },
 
             //save task name

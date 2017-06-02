@@ -2,9 +2,10 @@
 var User;
 (function (User_1) {
     class User {
-        constructor() {
+        constructor(token) {
             this.endPoint = 'http://localhost:8000/usersbot';
             this.axios = require('axios');
+            this.axios.defaults.headers.common['Authorization'] = 'JWT ' + token;
         }
         /**
          * get a user by id

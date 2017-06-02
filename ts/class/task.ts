@@ -6,8 +6,9 @@ export module Task{
         private endPoint:string = 'http://localhost:8000/tasks';
         private axios:any;
 
-        constructor() {
+        constructor(token) {
             this.axios = require('axios');
+            this.axios.defaults.headers.common['Authorization'] = 'JWT '+ token;
         }
         
         /**
