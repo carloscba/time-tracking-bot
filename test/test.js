@@ -9,8 +9,10 @@ describe('User Class', function() {
 
     it('List users', function(done) {  
         user.get().then(function(response){
-            if(response.data.count > 0){
+            if(response.data.count >= 0){
                 done()
+            }else{
+                done(error)
             }
         }).catch(function(error){
             done(error)

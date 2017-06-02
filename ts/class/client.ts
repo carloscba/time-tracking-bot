@@ -3,10 +3,11 @@ export module Client{
     export class Client{
         
         private id:any;
-        private firebase:any;
-        
-        constructor(firebase:any) {
-            this.firebase = firebase;
+        private endPoint:string = 'http://localhost:8000/clients';
+        private axios:any;
+
+        constructor() {
+            this.axios = require('axios');
         }
         
         /**
@@ -15,23 +16,58 @@ export module Client{
          * @returns {Promise}
          */
         public get(id:any):any{
-            console.log('--> /clients/[id]', '/clients/'+ id)
-            let ref = this.firebase.database().ref('/clients/client-'+ id);   
-            return ref.once('value');
+            let url:string;
+            if(id){
+                url = `${this.endPoint}/${id}/`;
+            }else{
+                url = `${this.endPoint}/`;
+            }
+            console.log('----> endPoint client class', url);
+            return this.axios.get(url);
         }
 
         /**
-         * get all clients
-         * @returns {Promise}
+         * Insert new client
+         * @param {Array} data
          * @example
-         * client.getAll().on("child_added", function(snapshot) {
-                console.log(snapshot.val().name);
-            });
-         */
-        public getAll():any{
-            console.log('--> /clients', '/clients')
-            let ref = this.firebase.database().ref('/clients');   
-            return ref.orderByChild('name');
+         * client.post({'id': 42,'name': 'Name'})
+         * @returns {Promise}
+         */        
+        public post(data:any):any{
+            let url = `${this.endPoint}/`;
+            console.log('----> endPoint client class', url);
+            return this.axios.post(url, {
+                name : data.name,
+                platform_id : data.id
+            })
+        }        
+
+        /**
+         * Update a client
+         * @param {Number} id
+         * @param {Array} data
+         * @example
+         * client.update(session.userData.profile.id, {name : 'new name',admin:1}).then(function(data){}); 
+         * @returns {Promise}
+         */         
+        public put(id:any, data:any):any{     
+            if(typeof(data) === 'object'){
+                let url = `${this.endPoint}/${id}/`;
+                console.log('----> endPoint client class', url);
+                return this.axios.put(url, data);            
+            }
+        }
+
+        /**
+         * Delete a client
+         * @param {Number} id
+         * @example
+         * client.remove(session.userData.profile.id).then(function(){});
+         * @returns {Promise}
+         */ 
+        public delete(id:any):any{     
+            let url = `${this.endPoint}/${id}/`;
+            return this.axios.delete(url);
         }        
 
     }

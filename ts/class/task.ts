@@ -1,9 +1,9 @@
-export module User{
+export module Task{
     
-    export class User{
+    export class Task{
         
         private id:any;
-        private endPoint:string = 'http://localhost:8000/usersbot';
+        private endPoint:string = 'http://localhost:8000/tasks';
         private axios:any;
 
         constructor() {
@@ -11,7 +11,7 @@ export module User{
         }
         
         /**
-         * get a user by id
+         * get a task by id
          * @param {Number} id 
          * @returns {Promise}
          */
@@ -22,20 +22,20 @@ export module User{
             }else{
                 url = `${this.endPoint}/`;
             }
-            console.log('----> endPoint user class', url);
+            console.log('----> endPoint task class', url);
             return this.axios.get(url);
         }
 
         /**
-         * Insert new user
+         * Insert new task
          * @param {Array} data
          * @example
-         * user.post({'id': 42,'name': 'Name'})
+         * task.post({'id': 42,'name': 'Name'})
          * @returns {Promise}
          */        
         public post(data:any):any{
             let url = `${this.endPoint}/`;
-            console.log('----> endPoint user class', url);
+            console.log('----> endPoint task class', url);
             return this.axios.post(url, {
                 name : data.name,
                 platform_id : data.id
@@ -43,26 +43,26 @@ export module User{
         }        
 
         /**
-         * Update a user
+         * Update a task
          * @param {Number} id
          * @param {Array} data
          * @example
-         * user.update(session.userData.profile.id, {name : 'new name',admin:1}).then(function(data){}); 
+         * task.update(session.userData.profile.id, {name : 'new name',admin:1}).then(function(data){}); 
          * @returns {Promise}
          */         
         public put(id:any, data:any):any{     
             if(typeof(data) === 'object'){
                 let url = `${this.endPoint}/${id}/`;
-                console.log('----> endPoint user class', url);
+                console.log('----> endPoint task class', url);
                 return this.axios.put(url, data);            
             }
         }
 
         /**
-         * Delete a user
+         * Delete a task
          * @param {Number} id
          * @example
-         * user.remove(session.userData.profile.id).then(function(){});
+         * task.remove(session.userData.profile.id).then(function(){});
          * @returns {Promise}
          */ 
         public delete(id:any):any{     
